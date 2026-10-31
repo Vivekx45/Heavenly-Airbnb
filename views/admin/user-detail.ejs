@@ -1,0 +1,53 @@
+<% layout("layouts/boilerplate") -%>
+<main class="admin-page mx-auto py-3 py-md-4">
+    <% const savedListings = (user.savedListings || []).filter(Boolean); %>
+    <a class="small text-decoration-none text-body-secondary" href="/admin/users">&larr; All users</a>
+    <section class="admin-user-header admin-panel d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3 p-3 p-md-4 my-3">
+        <% if (user.profilePicture) { %><img class="admin-user-avatar" src="<%= user.profilePicture %>" alt=""><% } else { %><span class="admin-user-avatar admin-user-avatar-fallback"><i class="bi bi-person-fill" aria-hidden="true"></i></span><% } %>
+        <div class="min-w-0 flex-grow-1"><div class="d-flex flex-wrap align-items-center gap-2"><h1 class="h3 fw-semibold mb-0"><%= user.displayName || user.username %></h1><span class="badge <%= user.role === 'admin' ? 'text-bg-dark' : 'text-bg-light' %>"><%= user.role %></span></div><p class="mb-1">@<%= user.username %> · <a href="mailto:<%= user.email %>"><%= user.email %></a></p><p class="small text-body-secondary mb-0">Joined <%= new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) %> · <%= user.loginCount || 0 %> successful sign-ins · Last login: <%= user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "Not recorded" %></p></div>
+    </section>
+
+    <div class="admin-user-stats mb-4">
+        <article class="admin-metric-card"><span>Favorites</span><strong><%= savedListings.length %></strong><small>Listings saved by this account</small></article>
+        <article class="admin-metric-card"><span>Listing visits</span><strong><%= totalVisits.toLocaleString("en-IN") %></strong><small>Across <%= distinctListingsVisited %> distinct stays</small></article>
+        <article class="admin-metric-card"><span>Bookings</span><strong><%= bookingCount %></strong><small>Most recent 20 shown below</small></article>
+        <article class="admin-metric-card"><span>Reviews</span><strong><%= reviewCount %></strong><small>Most recent 20 shown below</small></article>
+    </div>
+
+    <div class="row g-4">
+        <section class="col-lg-6">
+            <div class="admin-panel p-3 p-md-4 h-100">
+                <h2 class="h5 fw-semibold mb-3">Saved favorites</h2>
+                <% if (savedListings.length) { %><div class="admin-compact-list">
+                    <% for (const listing of savedListings) { %><a class="admin-top-item" href="/listings/<%= listing._id %>"><img src="<%= listing.image.url %>" alt=""><span class="min-w-0"><strong class="d-block text-truncate"><%= listing.title %></strong><small class="text-body-secondary"><%= listing.location %>, <%= listing.country %> · &#8377;<%= listing.price.toLocaleString("en-IN") %>/night</small></span></a><% } %>
+                </div><% } else { %><p class="admin-empty-state">This account has no saved listings.</p><% } %>
+            </div>
+        </section>
+        <section class="col-lg-6">
+            <div class="admin-panel p-3 p-md-4 h-100">
+                <h2 class="h5 fw-semibold mb-1">Recently viewed</h2><p class="small text-body-secondary mb-3">Visit tracking starts when the admin analytics feature is installed.</p>
+                <% if (visits.length) { %><div class="admin-compact-list">
+                    <% for (const visit of visits) { %><div class="admin-top-item"><img src="<%= visit.listingSnapshot.imageUrl %>" alt=""><span class="min-w-0 flex-grow-1"><% if (visit.listing) { %><a class="admin-visit-title" href="/listings/<%= visit.listing._id %>"><strong class="d-block text-truncate"><%= visit.listingSnapshot.title %></strong></a><% } else { %><strong class="d-block text-truncate"><%= visit.listingSnapshot.title %></strong><% } %><small class="text-body-secondary"><%= visit.listingSnapshot.location %>, <%= visit.listingSnapshot.country %> · Last viewed <%= new Date(visit.lastVisitedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %></small></span><span class="badge text-bg-light"><%= visit.visitCount %> visits</span></div><% } %>
+                </div><% } else { %><p class="admin-empty-state">No listing visits have been recorded for this account yet.</p><% } %>
+            </div>
+        </section>
+
+        <section class="col-12">
+            <div class="admin-panel p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-semibold mb-0">Booking history</h2><a class="small" href="/bookings">Manage all bookings</a></div>
+                <% if (bookings.length) { %><div class="table-responsive"><table class="table align-middle admin-table mb-0"><thead><tr><th>Listing</th><th>Dates</th><th>Status</th><th>Payment option</th><th>Total</th><th></th></tr></thead><tbody>
+                    <% for (const booking of bookings) { %><tr><td><%= booking.listingSnapshot.title %><small class="d-block text-body-secondary">Ref <%= booking.reference %></small></td><td class="text-nowrap small"><%= new Date(booking.checkIn).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" }) %> – <%= new Date(booking.checkOut).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" }) %></td><td><%= booking.status === "cancelled" ? "Cancelled" : "Demo confirmed" %></td><td><%= booking.paymentMethod %> <small class="d-block text-body-secondary">not processed</small></td><td class="text-nowrap">&#8377;<%= booking.total.toLocaleString("en-IN") %></td><td><a href="/bookings/<%= booking._id %>">Details</a></td></tr><% } %>
+                </tbody></table></div><% } else { %><p class="admin-empty-state">No bookings for this account.</p><% } %>
+            </div>
+        </section>
+
+        <section class="col-12">
+            <div class="admin-panel p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-semibold mb-0">Reviews written</h2><a class="small" href="/admin/reviews">Manage reviews</a></div>
+                <% if (reviews.length) { %><div class="row row-cols-1 row-cols-md-2 g-3">
+                    <% for (const review of reviews) { %><article class="col"><div class="admin-review-card h-100 p-3"><div class="d-flex justify-content-between gap-2"><strong><%= review.listing?.title || "Listing unavailable" %></strong><span class="badge text-bg-light"><%= review.rating %>/5</span></div><p class="small text-body-secondary mb-2"><%= review.listing ? `${review.listing.location}, ${review.listing.country}` : "" %></p><p class="mb-0"><%= review.comment %></p></div></article><% } %>
+                </div><% } else { %><p class="admin-empty-state">This account has not written any reviews.</p><% } %>
+            </div>
+        </section>
+    </div>
+</main>

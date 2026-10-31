@@ -1,0 +1,33 @@
+<% layout("layouts/boilerplate") -%>
+<main class="admin-page mx-auto py-3 py-md-4">
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div><a class="small text-decoration-none text-body-secondary" href="/admin">&larr; Dashboard</a><h1 class="h2 fw-semibold mt-2 mb-1">Manage listings</h1><p class="text-body-secondary mb-0"><%= totalListings.toLocaleString("en-IN") %> listings in the catalog.</p></div>
+        <a class="btn btn-danger rounded-pill" href="/listings/new">Add a listing</a>
+    </header>
+
+    <form class="admin-search-form d-flex flex-wrap gap-2 mb-3" action="/admin/listings" method="GET" role="search">
+        <input class="form-control rounded-pill flex-grow-1" type="search" name="q" value="<%= q %>" placeholder="Search listing, place, or country" aria-label="Search listings">
+        <select class="form-select rounded-pill admin-sort-select" name="sort" aria-label="Sort listings"><option value="recent" <%= sort === "recent" ? "selected" : "" %>>Most recent</option><option value="title" <%= sort === "title" ? "selected" : "" %>>Title</option><option value="priceLow" <%= sort === "priceLow" ? "selected" : "" %>>Price: low to high</option><option value="priceHigh" <%= sort === "priceHigh" ? "selected" : "" %>>Price: high to low</option></select>
+        <button class="btn btn-outline-dark rounded-pill px-4" type="submit">Apply</button>
+        <% if (q || sort !== "recent") { %><a class="btn btn-outline-secondary rounded-pill" href="/admin/listings">Clear</a><% } %>
+    </form>
+
+    <% if (listings.length) { %><div class="row row-cols-1 row-cols-md-2 g-3">
+        <% for (const listing of listings) { %>
+            <article class="col"><div class="admin-listing-card h-100">
+                <a class="admin-listing-image-link" href="/listings/<%= listing._id %>"><img class="admin-listing-image" src="<%= listing.image.url %>" alt="<%= listing.title %>"></a>
+                <div class="p-3">
+                    <div class="d-flex justify-content-between gap-3 align-items-start"><div class="min-w-0"><h2 class="h6 fw-semibold mb-1 text-truncate"><a class="text-decoration-none text-body" href="/listings/<%= listing._id %>"><%= listing.title %></a></h2><p class="small text-body-secondary mb-1"><%= listing.location %>, <%= listing.country %></p><p class="small mb-2">Host: <%= listing.owner?.displayName || listing.owner?.username || "Account unavailable" %></p></div><strong class="text-nowrap">&#8377;<%= listing.price.toLocaleString("en-IN") %><small class="fw-normal">/night</small></strong></div>
+                    <div class="d-flex flex-wrap gap-3 small text-body-secondary mb-3"><span><i class="bi bi-eye me-1" aria-hidden="true"></i><%= listing.visitCount %> views</span><span><i class="bi bi-heart me-1" aria-hidden="true"></i><%= listing.saveCount %> saves</span><span><i class="bi bi-star me-1" aria-hidden="true"></i><%= listing.reviewCount %> reviews</span></div>
+                    <div class="d-flex gap-2"><a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="/listings/<%= listing._id %>/edit">Edit</a><form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" onsubmit="return confirm('Delete this listing? Its reviews will also be deleted.')"><button class="btn btn-sm btn-outline-danger rounded-pill px-3" type="submit">Delete</button></form></div>
+                </div>
+            </div></article>
+        <% } %>
+    </div><% } else { %><div class="admin-empty-state"><%= q ? "No listings match this search." : "There are no listings yet." %></div><% } %>
+
+    <% if (pageCount > 1) { %><nav class="mt-4" aria-label="Listing pages"><ul class="pagination justify-content-center">
+        <% if (page > 1) { %><li class="page-item"><a class="page-link" href="/admin/listings?q=<%= encodeURIComponent(q) %>&sort=<%= sort %>&page=<%= page - 1 %>">Previous</a></li><% } %>
+        <li class="page-item disabled"><span class="page-link">Page <%= page %> of <%= pageCount %></span></li>
+        <% if (page < pageCount) { %><li class="page-item"><a class="page-link" href="/admin/listings?q=<%= encodeURIComponent(q) %>&sort=<%= sort %>&page=<%= page + 1 %>">Next</a></li><% } %>
+    </ul></nav><% } %>
+</main>

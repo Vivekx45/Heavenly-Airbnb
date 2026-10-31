@@ -1,0 +1,101 @@
+<% layout("layouts/boilerplate") -%>
+<main class="admin-page mx-auto py-3 py-md-4">
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div>
+            <p class="text-uppercase small fw-semibold text-danger mb-1">Heavenly administration</p>
+            <h1 class="h2 fw-semibold mb-1">Dashboard</h1>
+            <p class="text-body-secondary mb-0">A snapshot of listings, accounts, guest activity, and demo bookings.</p>
+        </div>
+        <nav class="d-flex flex-wrap gap-2" aria-label="Admin tools">
+            <a class="btn btn-outline-dark rounded-pill" href="/admin/users"><i class="bi bi-people me-1" aria-hidden="true"></i>Users</a>
+            <a class="btn btn-outline-dark rounded-pill" href="/admin/listings"><i class="bi bi-houses me-1" aria-hidden="true"></i>Listings</a>
+            <a class="btn btn-outline-dark rounded-pill" href="/admin/reviews"><i class="bi bi-star me-1" aria-hidden="true"></i>Reviews</a>
+            <a class="btn btn-dark rounded-pill" href="/bookings">Bookings</a>
+        </nav>
+    </header>
+
+    <div class="admin-metrics mb-4">
+        <article class="admin-metric-card"><span>Registered accounts</span><strong><%= stats.userCount.toLocaleString("en-IN") %></strong><small><%= stats.newUsersLast30Days %> new users in the last 30 days</small></article>
+        <article class="admin-metric-card"><span>Listings</span><strong><%= stats.listingCount.toLocaleString("en-IN") %></strong><small>Manage every stay in the catalog</small></article>
+        <article class="admin-metric-card"><span>Listing page views</span><strong><%= stats.totalVisits.toLocaleString("en-IN") %></strong><small><%= stats.uniqueUserListingViews.toLocaleString("en-IN") %> user and listing pairs tracked</small></article>
+        <article class="admin-metric-card"><span>Saved favorites</span><strong><%= stats.savedCount.toLocaleString("en-IN") %></strong><small>Saved listings across all accounts</small></article>
+        <article class="admin-metric-card"><span>Bookings</span><strong><%= stats.bookingCount.toLocaleString("en-IN") %></strong><small><%= stats.activeBookingCount %> demo-confirmed · <%= stats.cancelledBookingCount %> cancelled</small></article>
+        <a class="admin-metric-card admin-metric-link" href="/admin/reviews"><span>Reviews</span><strong><%= stats.reviewCount.toLocaleString("en-IN") %></strong><small>Manage guest reviews</small></a>
+    </div>
+
+    <section class="admin-demo-value d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 p-3 p-md-4 mb-4 rounded-4">
+        <div><h2 class="h6 fw-semibold mb-1">Demo booking value</h2><p class="small mb-0">Reference total for active demo bookings. This is not payment revenue.</p></div>
+        <strong class="fs-4">&#8377;<%= stats.demoBookingValue.toLocaleString("en-IN") %></strong>
+    </section>
+
+    <div class="row g-4 mb-4">
+        <section class="col-lg-6">
+            <div class="admin-panel h-100 p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+                    <div><h2 class="h5 fw-semibold mb-1">Most viewed listings</h2><p class="small text-body-secondary mb-0">Views are recorded from now on.</p></div>
+                    <a class="small" href="/admin/listings">Manage</a>
+                </div>
+                <% if (topViewedListings.length) { %>
+                    <div class="admin-top-list">
+                        <% for (const listing of topViewedListings) { %>
+                            <a class="admin-top-item" href="/listings/<%= listing._id %>">
+                                <img src="<%= listing.imageUrl %>" alt="">
+                                <span class="min-w-0 flex-grow-1"><strong class="d-block text-truncate"><%= listing.title %></strong><small class="text-body-secondary"><%= listing.location %>, <%= listing.country %></small></span>
+                                <span class="badge text-bg-light"><%= listing.visits.toLocaleString("en-IN") %> views</span>
+                            </a>
+                        <% } %>
+                    </div>
+                <% } else { %><p class="admin-empty-state mb-0">Listing view counts will appear as guests browse.</p><% } %>
+            </div>
+        </section>
+        <section class="col-lg-6">
+            <div class="admin-panel h-100 p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+                    <div><h2 class="h5 fw-semibold mb-1">Most saved listings</h2><p class="small text-body-secondary mb-0">Based on guest favorites.</p></div>
+                    <a class="small" href="/admin/listings">Manage</a>
+                </div>
+                <% if (topSavedListings.length) { %>
+                    <div class="admin-top-list">
+                        <% for (const listing of topSavedListings) { %>
+                            <a class="admin-top-item" href="/listings/<%= listing._id %>">
+                                <img src="<%= listing.imageUrl %>" alt="">
+                                <span class="min-w-0 flex-grow-1"><strong class="d-block text-truncate"><%= listing.title %></strong><small class="text-body-secondary"><%= listing.location %>, <%= listing.country %></small></span>
+                                <span class="badge text-bg-light"><%= listing.saves.toLocaleString("en-IN") %> saves</span>
+                            </a>
+                        <% } %>
+                    </div>
+                <% } else { %><p class="admin-empty-state mb-0">Guest favorites will appear here.</p><% } %>
+            </div>
+        </section>
+    </div>
+
+    <div class="row g-4">
+        <section class="col-lg-6">
+            <div class="admin-panel h-100 p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-semibold mb-0">Recently joined</h2><a class="small" href="/admin/users">All users</a></div>
+                <% if (recentUsers.length) { %>
+                    <div class="table-responsive"><table class="table align-middle admin-table mb-0"><thead><tr><th>Account</th><th>Role</th><th>Joined</th></tr></thead><tbody>
+                        <% for (const user of recentUsers) { %>
+                            <tr><td><a class="admin-account-link" href="/admin/users/<%= user._id %>"><strong><%= user.displayName || user.username %></strong><span><%= user.email %></span></a></td><td><span class="badge <%= user.role === 'admin' ? 'text-bg-dark' : 'text-bg-light' %>"><%= user.role %></span></td><td class="text-nowrap small"><%= new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %></td></tr>
+                        <% } %>
+                    </tbody></table></div>
+                <% } else { %><p class="admin-empty-state mb-0">No accounts found.</p><% } %>
+            </div>
+        </section>
+        <section class="col-lg-6">
+            <div class="admin-panel h-100 p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-semibold mb-0">Latest bookings</h2><a class="small" href="/bookings">All bookings</a></div>
+                <% if (recentBookings.length) { %>
+                    <div class="admin-recent-bookings">
+                        <% for (const booking of recentBookings) { %>
+                            <a class="admin-booking-row" href="/bookings/<%= booking._id %>">
+                                <span class="min-w-0"><strong class="d-block text-truncate"><%= booking.listingSnapshot.title %></strong><small class="text-body-secondary"><%= booking.user?.displayName || booking.user?.username || "Account unavailable" %> · <%= booking.reference %></small></span>
+                                <span class="text-end"><strong class="d-block">&#8377;<%= booking.total.toLocaleString("en-IN") %></strong><small class="text-body-secondary"><%= booking.status === "cancelled" ? "Cancelled" : "Demo" %></small></span>
+                            </a>
+                        <% } %>
+                    </div>
+                <% } else { %><p class="admin-empty-state mb-0">Bookings will appear here.</p><% } %>
+            </div>
+        </section>
+    </div>
+</main>

@@ -1,0 +1,89 @@
+<% layout("layouts/boilerplate") -%>
+
+    <body>
+        <div class="row mt-5">
+            <div class="col-8 offset-2">
+                <h3>Edit your Listing</h3>
+                <hr>
+                <br>
+                <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" value="<%= listing.title %>" class="form-control" name="listing[title]"
+                            required>
+                        <div class="valid-feedback">
+                            Title looks good!
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea type="text" name="listing[description]" class="form-control"
+                            required><%= listing.description %></textarea>
+                        <div class="invalid-feedback">
+                            Please enter a short description
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label d-block">Current listing image</label>
+                        <div class="listing-edit-image-frame">
+                            <img class="listing-edit-image-preview" src="<%= originalImgUrl %>" alt="Current image for <%= listing.title %>">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Upload New Image</label>
+                        <input type="file" class="form-control" name="listing[image]">
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3c col-md-4">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" value="<%= listing.price %>" class="form-control" name="listing[price]"
+                                required>
+                            <div class="invalid-feedback">
+                                Price must be valid
+                            </div>
+                        </div>
+                        <div class="mb-3 col-md-8">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" value="<%= listing.country %>" class="form-control"
+                                name="listing[country]" required>
+                            <div class="invalid-feedback">
+                                Country name must be valid
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="mb-5">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" value="<%= listing.location %>" class="form-control" name="listing[location]"
+                            required>
+                        <div class="invalid-feedback">
+                            Location must be valid
+                        </div>
+                    </div>
+                    <fieldset class="mb-4">
+                        <legend class="form-label">Listing categories</legend>
+                        <p class="form-text">Choose every category that fits this stay.</p>
+                        <input type="hidden" name="listing[categories]" value="">
+                        <div class="row row-cols-2 row-cols-md-3 g-2">
+                            <% listingCategories.forEach((category) => { %>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="listing[categories]" value="<%= category.slug %>" id="edit-category-<%= category.slug %>" <%= (listing.categories || []).includes(category.slug) ? "checked" : "" %>>
+                                        <label class="form-check-label" for="edit-category-<%= category.slug %>"><%= category.label %></label>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </fieldset>
+                    <div class="mb-4">
+                        <button class="btn btn-dark update-btn">Update</button>
+                        <button type="reset" class="btn btn-dark reset-btn-edit">Reset Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>

@@ -1,0 +1,45 @@
+<% layout("layouts/boilerplate") -%>
+
+<div class="container py-4 py-md-5">
+    <div class="profile-card card border-0 shadow-sm rounded-4 mx-auto">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start gap-4 mb-4">
+                <% if (profileUser.profilePicture) { %>
+                    <img class="profile-page-picture" src="<%= profileUser.profilePicture %>" alt="Profile photo" referrerpolicy="no-referrer">
+                <% } else { %>
+                    <div class="profile-page-fallback" aria-hidden="true"><i class="bi bi-person-fill"></i></div>
+                <% } %>
+                <div class="text-center text-sm-start">
+                    <p class="text-danger fw-semibold mb-2">Your Heavenly account</p>
+                    <h1 class="h2 mb-1"><%= profileUser.displayName || profileUser.username %></h1>
+                    <p class="text-body-secondary mb-0"><%= profileUser.email %></p>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Profile details</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-body-secondary fw-normal">Username</dt>
+                <dd class="col-sm-8"><%= profileUser.username %></dd>
+
+                <dt class="col-sm-4 text-body-secondary fw-normal">Account type</dt>
+                <dd class="col-sm-8"><%= isAdmin ? "Administrator" : "User" %></dd>
+
+                <dt class="col-sm-4 text-body-secondary fw-normal">Email</dt>
+                <dd class="col-sm-8"><%= profileUser.email %></dd>
+
+                <dt class="col-sm-4 text-body-secondary fw-normal">Sign-in method</dt>
+                <dd class="col-sm-8"><%= profileUser.socialAccounts?.some((account) => account.provider === "google") ? "Google" : "Email and password" %></dd>
+
+                <dt class="col-sm-4 text-body-secondary fw-normal">Member since</dt>
+                <dd class="col-sm-8"><%= profileUser.createdAt ? new Date(profileUser.createdAt).toLocaleDateString() : "—" %></dd>
+            </dl>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-danger" href="/saved"><i class="bi bi-heart me-1" aria-hidden="true"></i>Saved stays</a>
+                <a class="btn btn-outline-secondary" href="/listings">Explore stays</a>
+            </div>
+        </div>
+    </div>
+</div>

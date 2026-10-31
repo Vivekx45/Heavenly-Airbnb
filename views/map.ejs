@@ -1,0 +1,23 @@
+<% layout("layouts/boilerplate") -%>
+
+<main class="world-map-page py-4 py-lg-5">
+    <header class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+            <p class="text-danger fw-semibold text-uppercase small mb-2">Explore Heavenly</p>
+            <h1 class="h2 fw-semibold mb-1">Explore the world</h1>
+            <p class="text-body-secondary mb-0">Move around the globe and discover places to stay.</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <button class="btn btn-outline-secondary rounded-pill" type="button" data-fit-listings <%= mapListings.length ? "" : "disabled" %>>Show all <%= mapListings.length %> listings</button>
+            <span class="badge rounded-pill text-bg-light border text-dark px-3 py-2">
+                <i class="bi bi-geo-alt text-danger me-1" aria-hidden="true"></i>Starting in New Delhi, India
+            </span>
+        </div>
+    </header>
+
+    <div id="earth-map" class="world-map border shadow-sm" data-map-token="<%= mapToken || '' %>" data-listings="<%= JSON.stringify(mapListings) %>" role="region" aria-label="Interactive globe showing listing destinations, centered on New Delhi, India"></div>
+
+    <p class="small text-body-secondary mt-3 mb-0">Select a marker to open its listing. Zoom out or choose “Show all” to explore destinations worldwide.</p>
+</main>
+
+<script src="/js/world-map.js"></script>

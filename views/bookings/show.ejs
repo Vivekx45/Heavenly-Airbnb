@@ -1,0 +1,76 @@
+<% layout("layouts/boilerplate") -%>
+<main class="booking-page mx-auto py-3 py-md-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <a class="text-decoration-none text-body-secondary small" href="/bookings">&larr; Bookings</a>
+            <h1 class="h2 fw-semibold mt-2 mb-1">Booking details</h1>
+            <p class="text-body-secondary mb-0">Reference <strong><%= booking.reference %></strong></p>
+        </div>
+        <span class="badge rounded-pill <%= booking.status === 'cancelled' ? 'text-bg-secondary' : 'text-bg-success' %> booking-status">
+            <%= booking.status === "cancelled" ? "Cancelled" : "Demo confirmed" %>
+        </span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <section class="booking-panel p-3 p-md-4 mb-4">
+                <div class="d-flex gap-3 align-items-center mb-3">
+                    <img class="booking-summary-image" src="<%= booking.listingSnapshot.imageUrl %>" alt="">
+                    <div>
+                        <div class="small text-body-secondary"><%= booking.listingSnapshot.location %>, <%= booking.listingSnapshot.country %></div>
+                        <h2 class="h5 mb-0"><%= booking.listingSnapshot.title %></h2>
+                    </div>
+                </div>
+                <div class="row g-3 booking-detail-grid">
+                    <div class="col-6"><span class="small text-body-secondary d-block">Check-in</span><strong><%= new Date(booking.checkIn).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" }) %></strong></div>
+                    <div class="col-6"><span class="small text-body-secondary d-block">Check-out</span><strong><%= new Date(booking.checkOut).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" }) %></strong></div>
+                    <div class="col-6"><span class="small text-body-secondary d-block">Guests</span><strong><%= booking.guests %></strong></div>
+                    <div class="col-6"><span class="small text-body-secondary d-block">Nights</span><strong><%= booking.nights %></strong></div>
+                </div>
+            </section>
+
+            <section class="booking-panel p-3 p-md-4 mb-4">
+                <h2 class="h5 fw-semibold mb-3">Guest contact and address</h2>
+                <div class="row g-3 booking-detail-grid">
+                    <div class="col-sm-6"><span class="small text-body-secondary d-block">Name</span><strong><%= booking.guest.fullName %></strong></div>
+                    <div class="col-sm-6"><span class="small text-body-secondary d-block">Email</span><strong class="booking-break-word"><%= booking.guest.email %></strong></div>
+                    <div class="col-sm-6"><span class="small text-body-secondary d-block">Phone</span><strong><%= booking.guest.phone %></strong></div>
+                    <div class="col-sm-6"><span class="small text-body-secondary d-block">Address</span><strong><%= [booking.guest.addressLine1, booking.guest.addressLine2, booking.guest.city, booking.guest.region, booking.guest.postalCode, booking.guest.country].filter(Boolean).join(", ") %></strong></div>
+                    <% if (booking.guest.specialRequests) { %>
+                        <div class="col-12"><span class="small text-body-secondary d-block">Special requests</span><p class="mb-0 booking-break-word"><%= booking.guest.specialRequests %></p></div>
+                    <% } %>
+                </div>
+            </section>
+
+            <section class="booking-panel p-3 p-md-4">
+                <h2 class="h5 fw-semibold mb-2">Payment option</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi <%= booking.paymentMethod === 'card' ? 'bi-credit-card' : booking.paymentMethod === 'upi' ? 'bi-phone' : 'bi-bank' %>" aria-hidden="true"></i>
+                    <strong><%= paymentMethodLabel %></strong>
+                </div>
+                <p class="small text-body-secondary mt-2 mb-0">Demo only. Payment status: not processed. No charge was made.</p>
+            </section>
+        </div>
+
+        <aside class="col-lg-5">
+            <section class="booking-panel booking-summary p-3 p-md-4">
+                <h2 class="h5 fw-semibold">Price details</h2>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span><%= booking.nights %> × &#8377;<%= booking.pricePerNight.toLocaleString("en-IN") %> per night</span>
+                    <span>&#8377;<%= booking.subtotal.toLocaleString("en-IN") %></span>
+                </div>
+                <div class="d-flex justify-content-between small mb-3"><span>Fees and taxes</span><span>&#8377;0</span></div>
+                <hr>
+                <div class="d-flex justify-content-between fw-semibold"><span>Total (INR)</span><span>&#8377;<%= booking.total.toLocaleString("en-IN") %></span></div>
+                <% if (canCancel) { %>
+                    <form action="/bookings/<%= booking._id %>/cancel" method="POST" class="mt-4" onsubmit="return confirm('Cancel this demo booking?')">
+                        <button class="btn btn-outline-danger rounded-pill w-100" type="submit">Cancel booking</button>
+                    </form>
+                <% } %>
+                <% if (isAdmin && booking.status !== "cancelled") { %>
+                    <p class="small text-body-secondary mt-3 mb-0">Administrator view: guest and booking details are visible for management.</p>
+                <% } %>
+            </section>
+        </aside>
+    </div>
+</main>

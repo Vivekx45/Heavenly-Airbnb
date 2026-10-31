@@ -1,0 +1,40 @@
+<% layout("layouts/boilerplate") -%>
+<main class="admin-page mx-auto py-3 py-md-4">
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div><a class="small text-decoration-none text-body-secondary" href="/admin">&larr; Dashboard</a><h1 class="h2 fw-semibold mt-2 mb-1">Manage reviews</h1><p class="text-body-secondary mb-0"><%= totalReviews.toLocaleString("en-IN") %> reviews. Edit or remove a review from its listing.</p></div>
+        <a class="btn btn-outline-dark rounded-pill" href="/admin/listings">Manage listings</a>
+    </header>
+
+    <form class="admin-search-form d-flex flex-wrap gap-2 mb-3" action="/admin/reviews" method="GET" role="search">
+        <input class="form-control rounded-pill flex-grow-1" type="search" name="q" value="<%= q %>" placeholder="Search review text or author name" aria-label="Search reviews">
+        <select class="form-select rounded-pill admin-sort-select" name="rating" aria-label="Filter by rating"><option value="">All ratings</option><% for (let score = 5; score >= 1; score--) { %><option value="<%= score %>" <%= rating === score ? "selected" : "" %>><%= score %> star<%= score === 1 ? "" : "s" %></option><% } %></select>
+        <button class="btn btn-outline-dark rounded-pill px-4" type="submit">Apply</button>
+        <% if (q || rating) { %><a class="btn btn-outline-secondary rounded-pill" href="/admin/reviews">Clear</a><% } %>
+    </form>
+
+    <% if (reviews.length) { %>
+        <div class="d-flex flex-column gap-3">
+            <% for (const review of reviews) { %>
+                <article class="admin-panel p-3 p-md-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1"><strong><%= review.listing?.title || "Listing unavailable" %></strong><span class="badge text-bg-light"><%= review.rating %> / 5 stars</span></div>
+                            <% if (review.listing) { %><p class="small text-body-secondary mb-2"><%= review.listing.location %>, <%= review.listing.country %></p><% } %>
+                            <p class="mb-2"><%= review.comment %></p>
+                            <p class="small text-body-secondary mb-0">By <%= review.authorUser?.displayName || review.authorUser?.username || review.authorName || "Guest" %> · <%= new Date(review.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %></p>
+                        </div>
+                        <% if (review.listing) { %>
+                            <div class="d-flex align-items-start gap-2 flex-shrink-0"><a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="/listings/<%= review.listing._id %>/reviews/<%= review._id %>/edit">Edit</a><form method="POST" action="/listings/<%= review.listing._id %>/reviews/<%= review._id %>?_method=DELETE" onsubmit="return confirm('Delete this review?')"><button class="btn btn-sm btn-outline-danger rounded-pill px-3" type="submit">Delete</button></form></div>
+                        <% } %>
+                    </div>
+                </article>
+            <% } %>
+        </div>
+    <% } else { %><div class="admin-empty-state">No reviews match these filters.</div><% } %>
+
+    <% if (pageCount > 1) { %><nav class="mt-4" aria-label="Review pages"><ul class="pagination justify-content-center">
+        <% if (page > 1) { %><li class="page-item"><a class="page-link" href="/admin/reviews?q=<%= encodeURIComponent(q) %>&rating=<%= rating || "" %>&page=<%= page - 1 %>">Previous</a></li><% } %>
+        <li class="page-item disabled"><span class="page-link">Page <%= page %> of <%= pageCount %></span></li>
+        <% if (page < pageCount) { %><li class="page-item"><a class="page-link" href="/admin/reviews?q=<%= encodeURIComponent(q) %>&rating=<%= rating || "" %>&page=<%= page + 1 %>">Next</a></li><% } %>
+    </ul></nav><% } %>
+</main>

@@ -1,0 +1,109 @@
+<% layout("layouts/boilerplate") -%>
+
+<main class="py-4 py-lg-5">
+    <div class="row g-4 g-xl-5 align-items-start">
+        <aside class="col-lg-4 col-xl-3">
+            <div>
+                <p class="text-danger fw-semibold text-uppercase small mb-2">Host on Heavenly</p>
+                <h1 class="display-6 fw-semibold mb-3">Share a place people will love.</h1>
+                <p class="text-secondary mb-4">Add the details guests need to picture their stay. You can update your listing any time.</p>
+                <div class="list-group list-group-flush border-top">
+                    <div class="list-group-item px-0 py-3 bg-transparent">
+                        <span class="badge rounded-pill text-bg-danger me-2">1</span>
+                        Describe your place
+                    </div>
+                    <div class="list-group-item px-0 py-3 bg-transparent">
+                        <span class="badge rounded-pill text-bg-light border text-dark me-2">2</span>
+                        Add a great photo
+                    </div>
+                    <div class="list-group-item px-0 py-3 bg-transparent">
+                        <span class="badge rounded-pill text-bg-light border text-dark me-2">3</span>
+                        Set location and price
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="col-lg-8 col-xl-9">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-4">
+                        <h2 class="h3 fw-semibold mb-2">Create your listing</h2>
+                        <p class="text-secondary mb-0">Start with the essentials for your next guests.</p>
+                    </div>
+
+                    <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-semibold">Listing title</label>
+                            <input id="title" type="text" placeholder="e.g. A quiet cabin by the lake" name="listing[title]" class="form-control form-control-lg" required>
+                            <div class="valid-feedback">Title looks good!</div>
+                            <div class="invalid-feedback">Add a title for your place.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="description" class="form-label fw-semibold mb-0">Description</label>
+                                <small class="text-secondary"><span data-description-count>0</span> characters</small>
+                            </div>
+                            <textarea id="description" placeholder="Tell guests what makes your place special" name="listing[description]" class="form-control" rows="5" data-description-input required></textarea>
+                            <div class="invalid-feedback">Add a short description of your place.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="image" class="form-label fw-semibold">Cover photo</label>
+                            <input id="image" type="file" name="listing[image]" class="form-control" accept="image/*" data-listing-image required>
+                            <div class="form-text">Choose a clear photo that shows guests what the stay looks like.</div>
+                            <div class="mt-3 d-none" data-image-preview-wrap>
+                                <div class="ratio ratio-16x9">
+                                    <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded-3 border" alt="Preview of the selected listing photo" data-image-preview>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback">Add a photo for your listing.</div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-5">
+                                <label for="price" class="form-label fw-semibold">Price per night</label>
+                                <div class="input-group input-group-lg has-validation">
+                                    <span class="input-group-text">₹</span>
+                                    <input id="price" type="number" min="1" step="1" placeholder="1500" name="listing[price]" class="form-control" required>
+                                    <div class="invalid-feedback">Enter a valid nightly price.</div>
+                                    <span class="input-group-text">/ night</span>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="country" class="form-label fw-semibold">Country</label>
+                                <input id="country" type="text" placeholder="India" name="listing[country]" class="form-control form-control-lg" required>
+                                <div class="invalid-feedback">Enter the country.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="location" class="form-label fw-semibold">City or location</label>
+                                <input id="location" type="text" placeholder="Mumbai, Maharashtra" name="listing[location]" class="form-control form-control-lg" required>
+                                <div class="invalid-feedback">Enter the city or location.</div>
+                            </div>
+                        </div>
+
+                        <fieldset class="mb-4">
+                            <legend class="form-label fw-semibold mb-1">Categories</legend>
+                            <p class="form-text mb-3">Select every category that fits your place.</p>
+                            <input type="hidden" name="listing[categories]" value="">
+                            <div class="d-flex flex-wrap gap-2">
+                                <% listingCategories.forEach((category) => { %>
+                                    <input class="btn-check" type="checkbox" name="listing[categories]" value="<%= category.slug %>" id="new-category-<%= category.slug %>" autocomplete="off">
+                                    <label class="btn btn-outline-secondary rounded-pill" for="new-category-<%= category.slug %>"><%= category.label %></label>
+                                <% }) %>
+                            </div>
+                        </fieldset>
+
+                        <div class="d-flex flex-wrap gap-2 border-top pt-4">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Publish listing</button>
+                            <button type="reset" class="btn btn-outline-secondary btn-lg rounded-pill px-4">Clear form</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="/js/new-listing.js"></script>

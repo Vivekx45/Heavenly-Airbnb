@@ -1,0 +1,39 @@
+<% layout("layouts/boilerplate") -%>
+<main class="booking-page mx-auto py-3 py-md-4">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-semibold mb-1"><%= isAdmin ? "All bookings" : "Your bookings" %></h1>
+            <p class="text-body-secondary mb-0"><%= isAdmin ? "Review bookings across Heavenly." : "View and manage your stays." %></p>
+        </div>
+        <a class="btn btn-outline-dark rounded-pill" href="/listings">Explore stays</a>
+    </div>
+
+    <% if (!bookings.length) { %>
+        <section class="booking-panel text-center p-5">
+            <i class="bi bi-calendar2-week display-5 text-body-secondary" aria-hidden="true"></i>
+            <h2 class="h5 mt-3">No bookings yet</h2>
+            <p class="text-body-secondary mb-3">Choose a stay and dates to make a demo booking.</p>
+            <a class="btn btn-danger rounded-pill px-4" href="/listings">Browse listings</a>
+        </section>
+    <% } else { %>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <% for (const booking of bookings) { %>
+                <article class="col">
+                    <a class="booking-list-card d-flex gap-3 p-3 h-100 text-decoration-none text-body" href="/bookings/<%= booking._id %>">
+                        <img class="booking-list-image" src="<%= booking.listingSnapshot.imageUrl %>" alt="">
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="d-flex justify-content-between gap-2 align-items-start">
+                                <h2 class="h6 fw-semibold mb-1 text-truncate"><%= booking.listingSnapshot.title %></h2>
+                                <span class="badge rounded-pill flex-shrink-0 <%= booking.status === 'cancelled' ? 'text-bg-secondary' : 'text-bg-success' %>"><%= booking.status === "cancelled" ? "Cancelled" : "Demo confirmed" %></span>
+                            </div>
+                            <p class="small text-body-secondary mb-2"><%= booking.listingSnapshot.location %>, <%= booking.listingSnapshot.country %></p>
+                            <p class="small mb-1"><%= new Date(booking.checkIn).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short" }) %> – <%= new Date(booking.checkOut).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" }) %></p>
+                            <% if (isAdmin) { %><p class="small text-body-secondary mb-1">Guest: <%= booking.guest.fullName %></p><% } %>
+                            <p class="small fw-semibold mb-0">&#8377;<%= booking.total.toLocaleString("en-IN") %> · Ref <%= booking.reference %></p>
+                        </div>
+                    </a>
+                </article>
+            <% } %>
+        </div>
+    <% } %>
+</main>

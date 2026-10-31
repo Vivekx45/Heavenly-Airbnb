@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-md bg-body border-bottom sticky-top py-2">
+    <div class="container-fluid">
+        <a class="navbar-brand d-inline-flex align-items-center gap-1 me-md-4" href="/listings" aria-label="Heavenly home">
+            <i class="fa-brands fa-airbnb" aria-hidden="true"></i>
+            <span class="brand-wordmark">Heavenly</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link text-dark fs-4 px-md-2" href="/listings" aria-label="Explore listings" title="Explore">
+                    <i class="bi bi-compass" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="navbar-search col-md-6 my-2 my-md-0">
+                <form class="d-flex gap-2" role="search" aria-label="Search listings" action="/listings" method="GET">
+                    <a class="d-inline-flex align-items-center justify-content-center text-decoration-none map-access-button" href="/map" aria-label="Open the world map" title="World map">
+                        <span class="fs-4" aria-hidden="true">🌍</span>
+                    </a>
+                    <div class="position-relative flex-grow-1">
+                        <input class="form-control rounded-pill" type="search" name="q" placeholder="Search destinations" aria-label="Search destinations" value="<%= typeof q !== 'undefined' ? q : '' %>" autocomplete="off" data-listing-search aria-autocomplete="list" aria-controls="listing-search-suggestions" aria-expanded="false"/>
+                        <div class="dropdown-menu w-100 shadow-sm" id="listing-search-suggestions" role="listbox" data-search-suggestions></div>
+                    </div>
+                    <button class="btn btn-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center search-submit" type="submit" aria-label="Search listings" title="Search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="navbar-nav ms-md-auto">
+                <a class="nav-link text-dark" href="/listings/new">Airbnb your home</a>
+                <% if (!currUser) { %>
+                    <a class="nav-link text-dark" aria-current="page" href="/signup"><b>Sign Up</b></a>
+                    <a class="nav-link text-dark" href="/login"><b>Log in</b></a>
+                <% } %>
+                <% if (currUser) { %>
+                    <div class="nav-item dropdown">
+                        <button class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 rounded-pill profile-menu-toggle"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Open your profile menu">
+                            <% if (currUser.profilePicture) { %>
+                                <img class="navbar-profile-picture" src="<%= currUser.profilePicture %>" alt="" referrerpolicy="no-referrer">
+                            <% } else { %>
+                                <span class="navbar-profile-fallback" aria-hidden="true"><i class="bi bi-person-fill"></i></span>
+                            <% } %>
+                            <span class="d-none d-lg-inline text-truncate profile-menu-name"><%= currUser.displayName || currUser.username %></span>
+                            <% if (isAdmin) { %><span class="badge text-bg-dark">Admin</span><% } %>
+                            <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2">
+                            <li class="px-3 py-2">
+                                <div class="fw-semibold"><%= currUser.displayName || currUser.username %></div>
+                                <div class="small text-body-secondary"><%= currUser.email %></div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2" aria-hidden="true"></i>View profile</a></li>
+                            <li><a class="dropdown-item" href="/saved"><i class="bi bi-heart me-2" aria-hidden="true"></i>Saved stays</a></li>
+                            <li><a class="dropdown-item" href="/bookings"><i class="bi bi-calendar2-check me-2" aria-hidden="true"></i><%= isAdmin ? "All bookings" : "Your bookings" %></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <% if (isAdmin) { %>
+                                <li><a class="dropdown-item" href="/admin"><i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Admin dashboard</a></li>
+                                <li><a class="dropdown-item" href="/admin/users"><i class="bi bi-people me-2" aria-hidden="true"></i>Manage users</a></li>
+                                <li><a class="dropdown-item" href="/admin/listings"><i class="bi bi-houses me-2" aria-hidden="true"></i>Manage listings</a></li>
+                                <li><a class="dropdown-item" href="/admin/reviews"><i class="bi bi-star me-2" aria-hidden="true"></i>Manage reviews</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            <% } %>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Log out</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>

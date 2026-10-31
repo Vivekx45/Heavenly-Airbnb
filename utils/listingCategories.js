@@ -1,0 +1,15 @@
+module.exports = [
+    { slug: "trending", label: "Trending", icon: "bi bi-fire" },
+    { slug: "rooms", label: "Rooms", icon: "bi bi-door-open" },
+    { slug: "iconic-cities", label: "Iconic cities", icon: "bi bi-buildings" },
+    { slug: "beaches", label: "Beaches", icon: "bi bi-umbrella" },
+    { slug: "pools", label: "Pools", icon: "bi bi-water" },
+    { slug: "mountains", label: "Mountains", icon: "bi bi-triangle-fill" },
+    { slug: "castles", label: "Castles", icon: "bi bi-building" },
+    { slug: "camping", label: "Camping", icon: "bi bi-house-door" },
+    { slug: "farms", label: "Farms", icon: "bi bi-tree" },
+    { slug: "arctic", label: "Arctic", icon: "bi bi-snow" },
+    { slug: "cabins", label: "Cabins", icon: "bi bi-house" },
+    { slug: "hiking", label: "Hiking", icon: "bi bi-person-walking" },
+    { slug: "villa", label: "Villas", icon: "bi bi-house-heart" },
+];

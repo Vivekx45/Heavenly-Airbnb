@@ -1,0 +1,184 @@
+<% layout("layouts/boilerplate") -%>
+    <script>
+        const mapToken = <%- JSON.stringify(process.env.MAP_TOKEN) %>;
+        const coordinates = <%- JSON.stringify(listing.geometry?.coordinates || null) %>;
+        // Keep listing text from terminating this inline script element.
+        const locationName = <%- JSON.stringify(listing.location).replace(/[<>&\u2028\u2029]/g, (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`) %>;
+    </script>
+        <main class="listing-show mx-auto px-1 px-sm-3">
+            <header class="mb-4">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 gap-sm-3">
+                    <h1 class="listing-show-title mb-1"><%= listing.title %></h1>
+                    <div class="d-flex align-items-center gap-2 listing-show-tools">
+                        <% if (currUser) { %>
+                            <button type="button" class="listing-tool-button" data-save-listing data-save-url="/saved-listings/<%= listing._id %>" data-saved="<%= isSaved %>" aria-pressed="<%= isSaved %>">
+                                <i class="bi <%= isSaved ? 'bi-heart-fill' : 'bi-heart' %>" aria-hidden="true"></i>
+                                <span><%= isSaved ? "Saved" : "Save" %></span>
+                            </button>
+                        <% } %>
+                        <button type="button" class="listing-tool-button" data-share-listing>
+                            <i class="bi bi-box-arrow-up" aria-hidden="true"></i>
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+                <p class="listing-show-location mb-0 text-body-secondary">
+                    <%= listing.location %>, <%= listing.country %>
+                </p>
+            </header>
+
+            <img src="<%= listing.image.url %>" class="listing-show-image d-block w-100 object-fit-cover" alt="<%= listing.title %>">
+            <% if (listing.image.sourceUrl) { %>
+                <p class="small text-body-secondary mt-2 mb-0">
+                    Photo: <a href="<%= listing.image.sourceUrl %>" target="_blank" rel="noopener noreferrer"><%= listing.image.attribution || "Image source" %></a>
+                    <% if (listing.image.license && listing.image.licenseUrl) { %> · <a href="<%= listing.image.licenseUrl %>" target="_blank" rel="noopener noreferrer"><%= listing.image.license %></a><% } %>
+                </p>
+            <% } %>
+
+            <section class="listing-show-summary d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 gap-sm-3 py-4" aria-label="Listing details">
+                <p class="listing-show-host mb-0 text-secondary">
+                    <i>Hosted by <%= listing.owner?.username || "Heavenly host" %></i>
+                </p>
+                <p class="listing-show-price mb-0 fs-5 fw-semibold">
+                    &#8377; <%= listing.price.toLocaleString("en-IN") %>/-
+                </p>
+            </section>
+
+            <div class="listing-booking-cta d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 p-3 p-sm-4 mb-4 border rounded-4">
+                <div>
+                    <h2 class="h5 fw-semibold mb-1">Make this your next stay</h2>
+                    <p class="small text-body-secondary mb-0">Choose dates and guests to see your total. Demo checkout only; no payment is processed.</p>
+                </div>
+                <a href="/listings/<%= listing._id %>/book" class="btn btn-danger rounded-pill px-4 flex-shrink-0">Check availability</a>
+            </div>
+
+            <hr class="mt-0 mb-4 text-body-tertiary">
+            <p class="listing-show-description mb-4"><%= listing.description %></p>
+        </main>
+
+            <% if(isAdmin) {%>
+            <div class="listing-show-actions d-flex gap-3 mx-auto mb-4 px-1 px-sm-3">
+                <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark edit-btn">Edit</a>
+
+                <form method="POST" action="/listings/<%= listing._id%>?_method=DELETE" novalidate
+                    class="needs-validation">
+                    <button class="btn btn-dark dlt-btn">Delete</button>
+                </form>
+            </div>
+            <% } %>
+            <section class="listing-show-section listing-reviews-section mt-1 mb-3">
+                <% if(currUser) { %>
+                <div class="listing-review-form p-3 p-sm-4 mb-4 border rounded-4 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="listing-review-heading-icon d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle" aria-hidden="true">
+                            <i class="bi bi-star" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h4 class="mb-1">Leave a Review</h4>
+                            <p class="mb-0 text-body-secondary small">Your review can help other guests plan their stay.</p>
+                        </div>
+                    </div>
+                    <form action="/listings/<%= listing.id %>/reviews" method="POST" novalidate
+                        class="needs-validation">
+                        <div class="listing-review-rating d-flex align-items-center flex-wrap gap-3 p-3 rounded-3 bg-body-tertiary mb-3">
+                            <label class="form-label mb-0 fw-semibold" id="listing-rating-label">Rating</label>
+                            <fieldset class="starability-slot" aria-labelledby="listing-rating-label">
+                                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" aria-label="No rating." />
+                                <input type="radio" id="first-rate1" name="review[rating]" value="1" required checked />
+                                <label for="first-rate1" title="Terrible">1 star</label>
+                                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                                <label for="first-rate2" title="Not good">2 stars</label>
+                                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                                <label for="first-rate3" title="Average">3 stars</label>
+                                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                                <label for="first-rate4" title="Very good">4 stars</label>
+                                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                                <label for="first-rate5" title="Amazing">5 stars</label>
+                            </fieldset>
+                            <p class="listing-rating-feedback mb-0 text-body-secondary small" data-rating-feedback aria-live="polite">Poor</p>
+                            <div class="invalid-feedback listing-rating-error">Please choose a star rating.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label small fw-semibold mb-1">Comments</label>
+                            <textarea name="review[comment]" id="comment" rows="5" class="form-control rounded-4"
+                                placeholder="Share what stood out during your stay." required></textarea>
+                            <div class="invalid-feedback">
+                                Please add some comment for review
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center gap-3">
+                            <span class="listing-review-character-count text-body-secondary small" data-review-character-count aria-live="polite">0 characters</span>
+                            <button class="btn btn-outline-dark rounded-pill fw-semibold">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <% } else { %>
+                <div class="listing-review-login-prompt d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 p-3 border rounded-4 bg-body-tertiary mb-3">
+                    <div>
+                        <h4 class="mb-1">Have you stayed here?</h4>
+                        <p class="mb-0 text-body-secondary small">Sign in to share your experience with other guests.</p>
+                    </div>
+                    <a href="/login" class="btn btn-outline-dark rounded-pill">Log in</a>
+                </div>
+                <% } %>
+
+                <% if(listing.reviews.length > 0) { %> 
+                <div class="listing-reviews">
+                    <h4>All Reviews</h4>
+                    <div class="row row-cols-1 row-cols-sm-2 g-3">
+                    <% for (review of listing.reviews) { %>
+                        <article class="col">
+                          <div class="card listing-review-card h-100">
+                            <div class="card-body p-3">
+                                <h5 class="card-title fs-6 fw-semibold mb-2"><%= review.author ? `@${review.author.username}` : review.authorName ? `@${review.authorName}` : "Guest" %></h5>
+                                <p class="card-text starability-result mb-2" data-rating="<%= review.rating %>">
+                                    Rated: <%= review.rating %> star<%= review.rating === 1 ? "" : "s" %>
+                                </p>
+                                <p class="card-text">
+                                    <%= review.comment %>
+                                </p>
+                                <% if (isAdmin || (currUser && review.author && review.author._id.equals(currUser._id))) { %>
+                                <div class="d-flex gap-2 mt-3">
+                                    <% if (isAdmin) { %>
+                                        <a class="btn btn-sm btn-outline-secondary rounded-pill" href="/listings/<%= listing._id %>/reviews/<%= review._id %>/edit">Edit</a>
+                                    <% } %>
+                                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                        <button class="btn btn-sm btn-dark rounded-pill">Delete</button>
+                                    </form>
+                                </div>
+                                <% } %>
+                            </div>
+                          </div>
+                        </article>
+                    <% } %>
+                    </div>
+                </div>
+                <% } else { %>
+                <div class="listing-review-empty-state d-flex align-items-center gap-3 p-3 border rounded-4 bg-body-tertiary my-3">
+                    <span class="listing-review-empty-icon d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle" aria-hidden="true">
+                        <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <h5 class="mb-1">No reviews yet</h5>
+                        <p class="mb-0 text-body-secondary small">Be the first to share your experience.</p>
+                    </div>
+                </div>
+                <% } %>
+            </section>
+            <section class="listing-show-section listing-map-section pt-4 border-top mb-5">
+                <div class="listing-map-heading d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end gap-3 mb-3">
+                    <div>
+                        <h3 class="mb-1">Where you'll be</h3>
+                        <p class="mb-0 text-body-secondary small">Explore the surrounding area on the map.</p>
+                    </div>
+                    <p class="listing-map-location d-inline-flex align-items-center gap-2 m-0 px-3 py-2 border border-secondary-subtle rounded-pill text-secondary small">
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        <%= listing.location %>, <%= listing.country %>
+                    </p>
+                </div>
+                <div id="map" class="listing-map" role="region" aria-label="Map showing the listing area"></div>
+                <p class="listing-map-note mt-2 mb-0 text-body-secondary small">Map shows the general area.</p>
+            </section>
+
+        <script src="/js/listing-detail.js"></script>
+        <script src="/js/map.js"></script>

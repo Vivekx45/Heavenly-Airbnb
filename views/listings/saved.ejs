@@ -1,0 +1,44 @@
+<% layout("layouts/boilerplate") -%>
+
+<main class="py-4">
+    <header class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+            <h1 class="h2 mb-1">Saved places</h1>
+            <p class="text-body-secondary mb-0">Your saved stays, all in one place.</p>
+        </div>
+        <a class="btn btn-outline-dark rounded-pill px-3" href="/listings">Explore stays</a>
+    </header>
+
+    <% if (savedListings.length) { %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            <% for (const listing of savedListings) { %>
+                <div class="col">
+                    <article class="card h-100 border-0">
+                        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-reset">
+                            <div class="ratio ratio-4x3 rounded-4 overflow-hidden">
+                                <img src="<%= listing.image.url %>" class="w-100 h-100 object-fit-cover" alt="<%= listing.title %>">
+                            </div>
+                            <div class="card-body px-0">
+                                <h2 class="h6 card-title mb-1"><%= listing.title %></h2>
+                                <p class="text-body-secondary small mb-2"><%= listing.location %>, <%= listing.country %></p>
+                                <p class="mb-0"><strong>&#8377; <%= listing.price.toLocaleString("en-IN") %></strong> / night</p>
+                            </div>
+                        </a>
+                        <form method="POST" action="/saved-listings/<%= listing._id %>?_method=DELETE" class="mt-auto">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" type="submit">
+                                <i class="bi bi-heart me-1" aria-hidden="true"></i>Remove saved place
+                            </button>
+                        </form>
+                    </article>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <section class="text-center border rounded-4 p-5">
+            <i class="bi bi-heart fs-1 text-body-secondary mb-3" aria-hidden="true"></i>
+            <h2 class="h4">No saved places yet</h2>
+            <p class="text-body-secondary">When you find a stay you like, save it and it will show up here.</p>
+            <a class="btn btn-danger rounded-pill px-4" href="/listings">Start exploring</a>
+        </section>
+    <% } %>
+</main>

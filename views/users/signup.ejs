@@ -1,0 +1,61 @@
+<% layout("layouts/boilerplate") -%>
+
+<div class="row justify-content-center py-3 py-md-5">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <section class="card border-0 shadow-sm rounded-4" aria-labelledby="signup-heading">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <p class="text-danger fw-semibold mb-2"><i class="bi bi-house-heart me-1" aria-hidden="true"></i> Your next stay starts here</p>
+                    <h1 id="signup-heading" class="h2 fw-semibold">Join Heavenly</h1>
+                    <p class="text-body-secondary mb-0">Create an account to save places and plan your next trip.</p>
+                </div>
+
+                <%- include("../includes/social-auth-buttons.ejs", { authFlow: "signup" }) %>
+
+                <div class="d-flex align-items-center gap-3 my-4" aria-hidden="true">
+                    <hr class="flex-grow-1 my-0">
+                    <span class="small text-body-secondary">or sign up with email</span>
+                    <hr class="flex-grow-1 my-0">
+                </div>
+
+                <form action="/signup" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-control form-control-lg"
+                            autocomplete="username" minlength="3" maxlength="30" required>
+                        <div class="invalid-feedback">Choose a username with at least 3 characters.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" id="email" name="email" class="form-control form-control-lg"
+                            autocomplete="email" required>
+                        <div class="invalid-feedback">Enter a valid email address.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group input-group-lg">
+                            <input type="password" id="password" name="password" class="form-control"
+                                autocomplete="new-password" minlength="8" aria-describedby="password-help" required>
+                            <button class="btn btn-outline-secondary" type="button" data-password-toggle
+                                aria-label="Show password" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                            <div class="invalid-feedback">Use at least 8 characters for your password.</div>
+                        </div>
+                        <div id="password-help" class="form-text">Use at least 8 characters. <span data-password-status aria-live="polite"></span></div>
+                    </div>
+                    <button class="btn btn-danger btn-lg w-100" type="submit">Create account</button>
+                </form>
+
+                <p class="small text-body-secondary text-center mt-4 mb-0">
+                    By creating an account, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+                </p>
+            </div>
+            <div class="card-footer bg-body-tertiary border-0 rounded-bottom-4 text-center py-3">
+                Already have an account? <a href="/login" class="fw-semibold">Log in</a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script src="/js/signup.js"></script>

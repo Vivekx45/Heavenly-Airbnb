@@ -1,0 +1,171 @@
+<% layout("layouts/boilerplate") -%>
+<main class="booking-page mx-auto py-3 py-md-4">
+    <a class="text-decoration-none text-body-secondary small" href="/listings/<%= listing._id %>">
+        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i> Back to listing
+    </a>
+    <h1 class="h2 fw-semibold mt-3 mb-4">Confirm and book</h1>
+
+    <form action="/listings/<%= listing._id %>/bookings" method="POST" class="row g-4 needs-validation" novalidate>
+        <div class="col-lg-7">
+            <section class="booking-panel p-3 p-md-4 mb-4">
+                <h2 class="h5 fw-semibold mb-3">Your trip</h2>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label for="booking-check-in" class="form-label">Check-in</label>
+                        <input class="form-control" type="date" id="booking-check-in" name="booking[checkIn]" min="<%= minDate %>" required>
+                        <div class="invalid-feedback">Choose a check-in date.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="booking-check-out" class="form-label">Check-out</label>
+                        <input class="form-control" type="date" id="booking-check-out" name="booking[checkOut]" min="<%= minDate %>" required>
+                        <div class="invalid-feedback">Choose a check-out date after check-in.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="booking-guests" class="form-label">Guests</label>
+                        <input class="form-control" type="number" id="booking-guests" name="booking[guests]" min="1" max="16" value="1" required>
+                        <div class="form-text">Up to 16 guests per booking.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="booking-panel p-3 p-md-4 mb-4">
+                <h2 class="h5 fw-semibold mb-1">Guest contact and address</h2>
+                <p class="small text-body-secondary mb-3">These details are saved with this booking.</p>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-name">Full name</label>
+                        <input class="form-control" id="guest-name" name="booking[fullName]" value="<%= guestDefaults.fullName %>" autocomplete="name" maxlength="100" required>
+                        <div class="invalid-feedback">Enter the guest's full name.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-email">Email</label>
+                        <input class="form-control" type="email" id="guest-email" name="booking[email]" value="<%= guestDefaults.email %>" autocomplete="email" maxlength="254" required>
+                        <div class="invalid-feedback">Enter a valid email address.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-phone">Phone</label>
+                        <input class="form-control" type="tel" id="guest-phone" name="booking[phone]" autocomplete="tel" minlength="7" maxlength="25" placeholder="Include country code if needed" required>
+                        <div class="invalid-feedback">Enter a contact phone number.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="guest-address1">Address</label>
+                        <input class="form-control" id="guest-address1" name="booking[addressLine1]" autocomplete="address-line1" maxlength="200" required>
+                        <div class="invalid-feedback">Enter your address.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="guest-address2">Apartment, suite, etc. <span class="text-body-secondary">(optional)</span></label>
+                        <input class="form-control" id="guest-address2" name="booking[addressLine2]" autocomplete="address-line2" maxlength="200">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-city">City</label>
+                        <input class="form-control" id="guest-city" name="booking[city]" autocomplete="address-level2" maxlength="100" required>
+                        <div class="invalid-feedback">Enter your city.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-region">State / region</label>
+                        <input class="form-control" id="guest-region" name="booking[region]" autocomplete="address-level1" maxlength="100" required>
+                        <div class="invalid-feedback">Enter your state or region.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-postal">Postal code</label>
+                        <input class="form-control" id="guest-postal" name="booking[postalCode]" autocomplete="postal-code" maxlength="30" required>
+                        <div class="invalid-feedback">Enter your postal code.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="guest-country">Country</label>
+                        <input class="form-control" id="guest-country" name="booking[country]" autocomplete="country-name" maxlength="100" required>
+                        <div class="invalid-feedback">Enter your country.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="guest-requests">Special requests <span class="text-body-secondary">(optional)</span></label>
+                        <textarea class="form-control" id="guest-requests" name="booking[specialRequests]" rows="3" maxlength="1000" placeholder="Arrival notes or accessibility requests"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="booking-panel p-3 p-md-4">
+                <h2 class="h5 fw-semibold mb-1">Payment option</h2>
+                <p class="small text-body-secondary mb-3">Choose a display option for this replica. No payment will be taken or processed.</p>
+                <fieldset class="row g-2 border-0 p-0 m-0">
+                    <legend class="visually-hidden">Choose a demo payment method</legend>
+                    <div class="col-md-4">
+                        <input class="btn-check" type="radio" name="booking[paymentMethod]" id="payment-card" value="card" required>
+                        <label class="booking-payment-option" for="payment-card"><i class="bi bi-credit-card" aria-hidden="true"></i><span>Card</span></label>
+                    </div>
+                    <div class="col-md-4">
+                        <input class="btn-check" type="radio" name="booking[paymentMethod]" id="payment-upi" value="upi" required>
+                        <label class="booking-payment-option" for="payment-upi"><i class="bi bi-phone" aria-hidden="true"></i><span>UPI</span></label>
+                    </div>
+                    <div class="col-md-4">
+                        <input class="btn-check" type="radio" name="booking[paymentMethod]" id="payment-netbanking" value="netbanking" required>
+                        <label class="booking-payment-option" for="payment-netbanking"><i class="bi bi-bank" aria-hidden="true"></i><span>Net banking</span></label>
+                    </div>
+                </fieldset>
+                <div class="small text-danger mt-2">This demo does not ask for or store card numbers, UPI IDs, or bank credentials.</div>
+                <p class="small text-body-secondary mt-2 mb-0">Select one option to continue.</p>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="booking-terms" name="booking[acceptedTerms]" value="true" required>
+                    <label class="form-check-label small" for="booking-terms">I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">booking terms</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>.</label>
+                    <div class="invalid-feedback">Accept the terms to continue.</div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="col-lg-5">
+            <section class="booking-panel booking-summary p-3 p-md-4 position-sticky">
+                <div class="d-flex gap-3 align-items-start mb-3">
+                    <img class="booking-summary-image" src="<%= listing.image.url %>" alt="">
+                    <div class="min-w-0">
+                        <div class="small text-body-secondary"><%= listing.location %>, <%= listing.country %></div>
+                        <h2 class="h6 mb-1 mt-1"><%= listing.title %></h2>
+                        <div class="small"><strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong> per night</div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="h6 fw-semibold">Price details</h3>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span><span data-night-count>0 nights</span> × &#8377;<%= listing.price.toLocaleString("en-IN") %></span>
+                    <span data-price-subtotal>&#8377;0</span>
+                </div>
+                <div class="d-flex justify-content-between small mb-3">
+                    <span>Fees and taxes</span>
+                    <span>&#8377;0</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-semibold mb-3">
+                    <span>Total (INR)</span>
+                    <span data-price-total>&#8377;0</span>
+                </div>
+                <p class="small text-body-secondary">The total is calculated from the listing's nightly price. No extra fees are added in this demo.</p>
+                <button class="btn btn-danger rounded-pill w-100 py-2 fw-semibold" type="submit">Confirm demo booking</button>
+                <p class="small text-center text-body-secondary mt-2 mb-0">No real payment will be processed.</p>
+            </section>
+        </aside>
+    </form>
+</main>
+
+<script>
+    (() => {
+        const checkInInput = document.getElementById("booking-check-in");
+        const checkOutInput = document.getElementById("booking-check-out");
+        const nightsLabel = document.querySelector("[data-night-count]");
+        const subtotalLabel = document.querySelector("[data-price-subtotal]");
+        const totalLabel = document.querySelector("[data-price-total]");
+        const nightlyRate = <%= Number(listing.price) %>;
+        const currency = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+
+        function updatePrice() {
+            if (checkInInput.value) checkOutInput.min = checkInInput.value;
+            const start = Date.parse(`${checkInInput.value}T00:00:00Z`);
+            const end = Date.parse(`${checkOutInput.value}T00:00:00Z`);
+            const nights = Number.isFinite(start) && Number.isFinite(end) ? Math.max(0, (end - start) / 86400000) : 0;
+            const subtotal = Number.isInteger(nights) ? nights * nightlyRate : 0;
+            nightsLabel.textContent = `${nights} ${nights === 1 ? "night" : "nights"}`;
+            subtotalLabel.textContent = `₹${currency.format(subtotal)}`;
+            totalLabel.textContent = `₹${currency.format(subtotal)}`;
+        }
+
+        checkInInput.addEventListener("change", updatePrice);
+        checkOutInput.addEventListener("change", updatePrice);
+    })();
+</script>

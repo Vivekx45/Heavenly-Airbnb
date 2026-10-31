@@ -1,0 +1,66 @@
+<% layout("layouts/boilerplate") -%>
+
+<div class="row justify-content-center py-3 py-md-5">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <section class="card border-0 shadow-sm rounded-4" aria-labelledby="login-heading">
+            <div class="card-body p-4 p-md-5">
+                <% if (!loginMode) { %>
+                    <div class="text-center mb-4">
+                        <p class="text-danger fw-semibold mb-2"><i class="bi bi-house-heart me-1" aria-hidden="true"></i> Welcome to Heavenly</p>
+                        <h1 id="login-heading" class="h2 fw-semibold">Choose how to sign in</h1>
+                        <p class="text-body-secondary mb-0">Select the account type for this session.</p>
+                    </div>
+                    <div class="d-grid gap-3">
+                        <a class="btn btn-danger btn-lg" href="/login/user">Continue as a user</a>
+                        <a class="btn btn-outline-dark btn-lg" href="/login/admin">Administrator login</a>
+                    </div>
+                    <p class="text-center text-body-secondary small mt-4 mb-0">New to Heavenly? <a href="/signup">Create a user account</a></p>
+                <% } else { %>
+                    <div class="text-center mb-4">
+                        <% if (loginMode === "admin") { %>
+                            <p class="text-danger fw-semibold mb-2">Restricted administrator access</p>
+                            <h1 id="login-heading" class="h2 fw-semibold">Administrator login</h1>
+                            <p class="text-body-secondary mb-0">Use the administrator's username and password.</p>
+                        <% } else { %>
+                            <p class="text-danger fw-semibold mb-2"><i class="bi bi-house-heart me-1" aria-hidden="true"></i> Welcome back</p>
+                            <h1 id="login-heading" class="h2 fw-semibold">User login</h1>
+                            <p class="text-body-secondary mb-0">Sign in to continue to your stays and saved places.</p>
+                        <% } %>
+                    </div>
+
+                    <% if (loginMode === "user") { %>
+                        <%- include("../includes/social-auth-buttons.ejs", { authFlow: "login" }) %>
+                        <div class="d-flex align-items-center gap-3 my-4" aria-hidden="true">
+                            <hr class="flex-grow-1 my-0">
+                            <span class="small text-body-secondary">or use username and password</span>
+                            <hr class="flex-grow-1 my-0">
+                        </div>
+                    <% } %>
+
+                    <form action="/login" method="POST" class="needs-validation" novalidate>
+                        <input type="hidden" name="loginMode" value="<%= loginMode %>">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="username" class="form-control form-control-lg"
+                                autocomplete="username" required>
+                            <div class="invalid-feedback">Enter your username.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control form-control-lg"
+                                autocomplete="current-password" required>
+                            <div class="invalid-feedback">Enter your password.</div>
+                        </div>
+                        <button class="btn btn-danger btn-lg w-100" type="submit">Log in</button>
+                    </form>
+                    <div class="d-flex justify-content-between align-items-center mt-4 small">
+                        <a href="/login">Choose another sign-in type</a>
+                        <% if (loginMode === "user") { %>
+                            <a href="/signup">Create an account</a>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+    </div>
+</div>

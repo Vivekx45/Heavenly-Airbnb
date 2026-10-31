@@ -1,0 +1,40 @@
+<% layout("layouts/boilerplate") -%>
+<main class="admin-page mx-auto py-3 py-md-4">
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div><a class="small text-decoration-none text-body-secondary" href="/admin">&larr; Dashboard</a><h1 class="h2 fw-semibold mt-2 mb-1">Manage users</h1><p class="text-body-secondary mb-0"><%= totalUsers.toLocaleString("en-IN") %> account<%= totalUsers === 1 ? "" : "s" %> · Select an account to view its activity.</p></div>
+        <a class="btn btn-dark rounded-pill" href="/admin/listings">Manage listings</a>
+    </header>
+
+    <form class="admin-search-form d-flex gap-2 mb-3" action="/admin/users" method="GET" role="search">
+        <input class="form-control rounded-pill" type="search" name="q" value="<%= q %>" placeholder="Search name, username, or email" aria-label="Search accounts">
+        <button class="btn btn-outline-dark rounded-pill px-4" type="submit">Search</button>
+        <% if (q) { %><a class="btn btn-outline-secondary rounded-pill" href="/admin/users">Clear</a><% } %>
+    </form>
+
+    <% if (users.length) { %>
+        <div class="admin-panel table-responsive">
+            <table class="table table-hover align-middle admin-table mb-0">
+                <thead><tr><th>Account</th><th>Role</th><th>Joined</th><th>Last login</th><th>Logins</th><th>Saved</th><th>Visits</th><th>Bookings</th><th>Reviews</th></tr></thead>
+                <tbody>
+                    <% for (const user of users) { %>
+                        <tr>
+                            <td><a class="admin-account-link" href="/admin/users/<%= user._id %>"><strong><%= user.displayName || user.username %></strong><span>@<%= user.username %> · <%= user.email %></span></a></td>
+                            <td><span class="badge <%= user.role === 'admin' ? 'text-bg-dark' : 'text-bg-light' %>"><%= user.role %></span></td>
+                            <td class="text-nowrap small"><%= new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %></td>
+                            <td class="text-nowrap small"><%= user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Not recorded" %></td>
+                            <td><%= user.loginCount || 0 %></td><td><%= user.savedCount %></td><td><%= user.totalVisits %> <small class="text-body-secondary">/ <%= user.listingsVisited %> stays</small></td><td><%= user.bookingCount %></td><td><%= user.reviewCount %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %><div class="admin-empty-state">No accounts match this search.</div><% } %>
+
+    <% if (pageCount > 1) { %>
+        <nav class="mt-4" aria-label="User list pages"><ul class="pagination justify-content-center">
+            <% if (page > 1) { %><li class="page-item"><a class="page-link" href="/admin/users?q=<%= encodeURIComponent(q) %>&page=<%= page - 1 %>">Previous</a></li><% } %>
+            <li class="page-item disabled"><span class="page-link">Page <%= page %> of <%= pageCount %></span></li>
+            <% if (page < pageCount) { %><li class="page-item"><a class="page-link" href="/admin/users?q=<%= encodeURIComponent(q) %>&page=<%= page + 1 %>">Next</a></li><% } %>
+        </ul></nav>
+    <% } %>
+</main>
